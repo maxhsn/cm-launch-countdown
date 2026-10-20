@@ -13,6 +13,7 @@ def build_html():
     t = t.replace("__SPACE__", base64.b64encode((ROOT / "brand/space.ttf").read_bytes()).decode())
     logo = re.sub(r'\s(width|height)="\d+"', '', (ROOT / "brand/logo.svg").read_text().strip(), count=2)
     t = t.replace("__LOGO__", logo).replace("__MARK__", (ROOT / "brand/mark.svg").read_text().strip())
+    (ROOT / "out").mkdir(exist_ok=True)
     out = ROOT / "out/page.html"; out.write_text(t); return out
 
 def caption(now):

@@ -1,0 +1,267 @@
+<title>CM Launch Countdown</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  @font-face { font-family: Titling; src: url(data:font/otf;base64,__TITLING__) format("opentype"); font-display: swap; }
+  @font-face { font-family: Space; src: url(data:font/ttf;base64,__SPACE__) format("truetype"); font-display: swap; font-weight: 300 700; }
+  /* Layout: combatmarket.com hero grammar. Header with the wordmark, left-aligned kicker, two-line Titling headline with the second line in red, counter row ruled with the site's hairlines, footer strip. Dark ink, paper text, one red. */
+  :root {
+    --ink: #111110;
+    --panel: #1b1b19;
+    --paper: #f0efe9;
+    --red: #f3432a;
+    --muted: #aaa9a2;
+    --line: #ffffff26;
+    --gutter: clamp(22px, 4.5vw, 80px);
+    --display: Titling, "Titling Gothic FB Condensed", Impact, "Arial Narrow", sans-serif;
+    --body: Space, Arial, sans-serif;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    color-scheme: dark;
+  }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--ink); color: var(--paper);
+    font: 400 16px/1.6 var(--body);
+    overflow: hidden; position: relative;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* background mark, like the site's section watermark */
+  .watermark {
+    position: fixed; right: -8vw; bottom: -12vh; width: min(64vh, 70vw); aspect-ratio: 1; z-index: 0; pointer-events: none;
+    opacity: 0.07; transition: transform 0.8s var(--ease-out);
+  }
+  .watermark svg { width: 100%; height: 100%; display: block; }
+  .grain {
+    position: fixed; inset: -50%; width: 200%; height: 200%; z-index: 3; pointer-events: none; opacity: 0.045; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    animation: grain 0.7s steps(6) infinite;
+  }
+  @keyframes grain { 0%{transform:translate(0,0)} 25%{transform:translate(-3%,2%)} 50%{transform:translate(2%,-4%)} 75%{transform:translate(-4%,-1%)} 100%{transform:translate(0,0)} }
+
+  .frame { position: relative; z-index: 2; min-height: 100%; display: grid; grid-template-rows: auto 1fr auto; }
+
+  header { display: flex; align-items: center; justify-content: space-between; gap: 30px; height: 92px; padding: 17px var(--gutter); border-bottom: 1px solid var(--line); animation: fade 1s var(--ease-out) both; }
+  .logo svg { width: 136px; height: auto; display: block; }
+  .nav-right { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 22px; }
+  .nav-right .pill { color: var(--paper); border: 1px solid var(--line); border-radius: 30px; padding: 8px 15px; font-size: 12px; line-height: 1.3; }
+  .nav-right .pill b { color: var(--red); font-weight: 600; }
+
+  .hero { display: grid; align-content: center; gap: clamp(22px, 3.5vh, 40px); padding: clamp(28px, 4vh, 48px) var(--gutter); }
+  .kicker { font-size: 11px; letter-spacing: 0.08em; font-weight: 500; display: flex; align-items: center; gap: 10px; text-transform: uppercase; animation: rise 1s var(--ease-out) both 0.15s; }
+  .kicker svg { width: 17px; height: 17px; display: block; }
+  .kicker .dot { color: var(--muted); }
+
+  h1 { margin: 0; font-family: var(--display); font-weight: 500; font-size: clamp(60px, 8.2vw, 128px); line-height: 0.99; letter-spacing: -0.027em; text-transform: uppercase; }
+  h1 > span { display: block; width: fit-content; overflow: hidden; padding-bottom: 0.04em; margin-bottom: -0.04em; }
+  h1 .c { display: inline-block; animation: lift 1s var(--ease-out) both; }
+  h1 em { font-style: normal; color: var(--red); }
+  @keyframes lift { from { transform: translateY(105%); } to { transform: translateY(0); } }
+  @keyframes rise { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .clock {
+    display: grid; grid-template-columns: repeat(4, max-content); column-gap: clamp(28px, 5vw, 90px); row-gap: 20px;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(14px, 2.4vh, 26px) 0;
+    transform-style: preserve-3d; transition: transform 0.6s var(--ease-out); will-change: transform;
+    animation: rise 1.2s var(--ease-out) both 0.45s;
+  }
+  .unit { display: grid; gap: 6px; }
+  .digits { display: flex; }
+  .reel {
+    height: 1em; overflow: hidden; font-family: var(--display); font-weight: 500;
+    font-size: clamp(68px, 10.5vw, 150px); line-height: 1; letter-spacing: -0.03em; width: 0.54em; text-align: center;
+    font-variant-numeric: tabular-nums;
+    mask-image: linear-gradient(to bottom, transparent 0, #000 5%, #000 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 5%, #000 95%, transparent 100%);
+  }
+  .strip { display: block; transition: transform 0.55s var(--ease-out); will-change: transform; }
+  .strip span { display: block; height: 1em; line-height: 1; }
+  .unit[data-unit="seconds"] .reel { color: var(--red); }
+  .lbl { font-size: 11px; letter-spacing: 0.08em; font-weight: 500; text-transform: uppercase; color: var(--muted); }
+  .static .unit[data-unit="seconds"] { display: none; }
+  .static .clock { grid-template-columns: repeat(3, max-content); }
+  .static .button { display: none; }
+
+  .sub { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 30px; font-size: 14px; color: var(--muted); animation: rise 1.2s var(--ease-out) both 0.7s; }
+  .sub strong { color: var(--paper); font-weight: 500; }
+  .button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 13px 18px; font-size: 13px; font-weight: 600; line-height: 1.3; border: 1px solid transparent; border-radius: 2px; background: var(--paper); color: var(--ink); transition: background .2s, color .2s, transform .2s; }
+  .button:hover { transform: translateY(-2px); background: var(--red); color: var(--paper); }
+  .button.red { background: var(--red); color: var(--paper); }
+
+  footer { border-top: 1px solid var(--line); padding: 16px var(--gutter); display: flex; justify-content: space-between; gap: 20px; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); animation: fade 1.2s var(--ease-out) both 0.9s; }
+  footer b { color: var(--paper); font-weight: 500; }
+
+  .live .clock, .live .sub .when { display: none; }
+  .live .nav-right .pill { border-color: var(--red); }
+  .live h1 { font-size: clamp(80px, 13vw, 220px); }
+
+  @media (max-width: 700px) {
+    header { height: 75px; padding-block: 15px; }
+    .logo svg { width: 112px; }
+    .nav-right .muted-text { display: none; }
+    .clock { grid-template-columns: repeat(2, max-content); column-gap: 34px; }
+    .static .clock { grid-template-columns: repeat(3, max-content); column-gap: 22px; }
+    .reel { font-size: clamp(64px, 20vw, 110px); }
+    h1 { font-size: 15.5vw; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    header, .kicker, h1 .c, .clock, .sub, footer, .grain { animation: none; }
+    .strip, .clock, .watermark { transition: none; }
+  }
+  .static header, .static .kicker, .static h1 .c, .static .clock, .static .sub, .static footer, .static .grain { animation: none; }
+  .static .strip, .static .clock { transition: none; }
+</style>
+
+<div class="watermark" aria-hidden="true">__MARK__</div>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="frame" id="frame">
+  <header>
+    <a class="logo" href="https://combatmarket.com" target="_blank" rel="noopener" aria-label="Combat Market">__LOGO__</a>
+    <div class="nav-right">
+      <span class="muted-text">Boxing, MMA, Muay Thai, BJJ, kickboxing</span>
+      <span class="pill" id="pill">Full launch <b>26 Oct</b></span>
+    </div>
+  </header>
+
+  <main class="hero">
+    <div class="kicker"><span class="mark">__MARK__</span><span>Full launch</span><span class="dot">/</span><span>Monday 26 October</span><span class="dot">/</span><span>12:00 Dubai</span></div>
+    <h1 id="headline" aria-label="The market opens Monday."></h1>
+
+    <section class="clock" id="clock" aria-label="Countdown to launch">
+      <div class="unit" data-unit="days"><div class="digits" id="d"></div><div class="lbl">Days</div></div>
+      <div class="unit" data-unit="hours"><div class="digits" id="h"></div><div class="lbl">Hours</div></div>
+      <div class="unit" data-unit="minutes"><div class="digits" id="m"></div><div class="lbl">Minutes</div></div>
+      <div class="unit" data-unit="seconds"><div class="digits" id="s"></div><div class="lbl">Seconds</div></div>
+    </section>
+
+    <div class="sub">
+      <div class="when"><strong>Monday 26 October, 12:00</strong> Dubai (GST, UTC+4)<span id="local"></span></div>
+      <a class="button" id="cta" href="https://combatmarket.com" target="_blank" rel="noopener">combatmarket.com</a>
+    </div>
+  </main>
+
+  <footer><span>Earn beyond fight night</span><span id="stamp">Powered by <b>LUUP</b></span></footer>
+</div>
+
+<script>
+  (function () {
+    var TARGET = Date.parse("2026-10-26T08:00:00Z"); /* 12:00 Dubai, UTC+4 */
+    var STATIC = window.CM_STATIC || null;
+    var reduced = false;
+    try { reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+    if (STATIC) { document.getElementById("frame").classList.add("static"); reduced = true; }
+    var now = function () { return STATIC && STATIC.now ? STATIC.now : Date.now(); };
+
+    function setHeadline(lines) {
+      var h = document.getElementById("headline"); h.innerHTML = ""; var i = 0;
+      lines.forEach(function (line) {
+        var row = document.createElement("span");
+        var target = row;
+        if (line.red) { target = document.createElement("em"); row.appendChild(target); }
+        line.text.split("").forEach(function (ch) {
+          var c = document.createElement("span"); c.className = "c";
+          c.textContent = ch === " " ? " " : ch; c.style.animationDelay = (0.3 + i * 0.03) + "s"; i++;
+          target.appendChild(c);
+        });
+        h.appendChild(row);
+      });
+    }
+
+    var STRIP = [9,8,7,6,5,4,3,2,1,0,9,8,7,6,5,4,3,2,1,0];
+    function makeReel(container) {
+      var reel = document.createElement("span"); reel.className = "reel";
+      var strip = document.createElement("span"); strip.className = "strip";
+      STRIP.forEach(function (n) { var s = document.createElement("span"); s.textContent = n; strip.appendChild(s); });
+      reel.appendChild(strip); container.appendChild(reel);
+      strip.style.transform = "translateY(-9em)";
+      return { strip: strip, pos: 9, digit: 0 };
+    }
+    function setDigit(r, digit, instant) {
+      if (digit === r.digit && !instant) return;
+      var next = r.pos; while (STRIP[next] !== digit) next++;
+      r.digit = digit; r.pos = next;
+      var snapNow = instant || reduced;
+      if (snapNow) r.strip.style.transition = "none";
+      r.strip.style.transform = "translateY(-" + next + "em)";
+      if (snapNow) { void r.strip.offsetHeight; r.strip.style.transition = ""; }
+      if (next >= 10) {
+        var snap = function () {
+          r.strip.removeEventListener("transitionend", snap);
+          r.pos = next - 10; r.strip.style.transition = "none";
+          r.strip.style.transform = "translateY(-" + r.pos + "em)";
+          void r.strip.offsetHeight; r.strip.style.transition = "";
+        };
+        if (snapNow) snap(); else r.strip.addEventListener("transitionend", snap);
+      }
+    }
+    var units = {};
+    ["d","h","m","s"].forEach(function (id) { var c = document.getElementById(id); units[id] = [makeReel(c), makeReel(c)]; });
+    function setUnit(id, v, instant) { v = Math.max(0, Math.min(99, v)); setDigit(units[id][0], Math.floor(v / 10), instant); setDigit(units[id][1], v % 10, instant); }
+
+    try {
+      if (!STATIC && new Date().getTimezoneOffset() !== -240) {
+        var fmt = new Intl.DateTimeFormat(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZoneName: "short" });
+        document.getElementById("local").textContent = " · " + fmt.format(new Date(TARGET)) + " where you are";
+      }
+    } catch (e) {}
+
+    function parts(diff) { var sec = Math.floor(diff / 1000); return { d: Math.floor(sec / 86400), h: Math.floor((sec % 86400) / 3600), m: Math.floor((sec % 3600) / 60), s: sec % 60 }; }
+
+    function goLive() {
+      document.getElementById("frame").classList.add("live");
+      setHeadline([{ text: "The market" }, { text: "is open.", red: true }]);
+      document.getElementById("pill").innerHTML = "<b>Live now</b>";
+      var cta = document.getElementById("cta"); cta.textContent = "Enter Combat Market"; cta.classList.add("red");
+    }
+
+    if (STATIC) {
+      var diff = TARGET - now();
+      if (diff <= 0) { goLive(); }
+      else {
+        var p = parts(diff);
+        var dayWord = p.d === 1 ? "day" : "days";
+        var line2 = p.d > 0 ? p.d + " " + dayWord + " out." : (p.h > 0 ? p.h + (p.h === 1 ? " hour" : " hours") + " out." : "Minutes away.");
+        setHeadline([{ text: "Full launch" }, { text: line2, red: true }]);
+        setUnit("d", p.d, true); setUnit("h", p.h, true); setUnit("m", p.m, true);
+      }
+      if (STATIC.stamp) document.getElementById("stamp").innerHTML = STATIC.stamp + " · Powered by <b>LUUP</b>";
+      return;
+    }
+
+    setHeadline([{ text: "The market" }, { text: "opens Monday.", red: true }]);
+
+    var first = true;
+    function tick() {
+      var diff = TARGET - now();
+      if (diff <= 0) { goLive(); return; }
+      var p = parts(diff);
+      if (first) {
+        first = false;
+        ["d","h","m","s"].forEach(function (id, i) {
+          units[id].forEach(function (r) { r.strip.style.transitionDuration = "1.4s"; });
+          setTimeout(function () {
+            setUnit(id, p[id]);
+            setTimeout(function () { units[id].forEach(function (r) { r.strip.style.transitionDuration = ""; }); }, 1500);
+          }, 650 + i * 120);
+        });
+        setTimeout(tick, 2300); return;
+      }
+      setUnit("d", p.d); setUnit("h", p.h); setUnit("m", p.m); setUnit("s", p.s);
+      setTimeout(tick, 1000 - (Date.now() % 1000));
+    }
+    tick();
+
+    var clock = document.getElementById("clock"), wm = document.querySelector(".watermark");
+    if (!reduced && window.matchMedia("(hover: hover)").matches) {
+      window.addEventListener("mousemove", function (e) {
+        var x = e.clientX / window.innerWidth - 0.5, y = e.clientY / window.innerHeight - 0.5;
+        clock.style.transform = "perspective(1400px) rotateY(" + (x * 6) + "deg) rotateX(" + (-y * 5) + "deg)";
+        wm.style.transform = "translate(" + (-x * 24) + "px," + (-y * 24) + "px)";
+      });
+    }
+  })();
+</script>

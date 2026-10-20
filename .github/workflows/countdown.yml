@@ -1,0 +1,36 @@
+name: Post countdown to Slack
+
+on:
+  schedule:
+    - cron: "0 3-14 * * *"   # every hour, 07:00 to 18:00 Dubai (UTC+4)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: countdown
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install renderer
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Render image
+        run: python render.py
+      - name: Upload to Slack
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python post_to_slack.py

@@ -2,7 +2,7 @@ name: Post countdown to Slack
 
 on:
   schedule:
-    - cron: "0 3-14 * * *"   # every hour, 07:00 to 18:00 Dubai (UTC+4)
+    - cron: "7 3-14 * * *"   # hourly at :07, 07:07 to 18:07 Dubai (UTC+4); off the hour so GitHub does not drop it
   workflow_dispatch:
 
 permissions:
